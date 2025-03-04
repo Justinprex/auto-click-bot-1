@@ -10,7 +10,6 @@
             text-align: center;
             padding: 20px;
             background-color: #f4f4f4;
-            transition: background 0.3s, color 0.3s;
         }
         .container {
             display: flex;
@@ -23,7 +22,6 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s, color 0.3s;
             border: 1px solid #ddd;
         }
         .input-group {
@@ -45,7 +43,6 @@
             color: white;
             border: none;
             cursor: pointer;
-            transition: background 0.3s;
         }
         button.stop {
             background-color: #dc3545;
@@ -116,12 +113,12 @@
         }
 
         function startAutoClick() {
-            let url = document.getElementById("url").value;
+            let url = document.getElementById("url").value.trim();
             maxClicks = parseInt(document.getElementById("clickCount").value);
             let delay = parseInt(document.getElementById("clickInterval").value) * 1000;
 
-            if (!url) {
-                alert("Please enter a valid URL!");
+            if (!url || !/^https?:\/\//.test(url)) {
+                alert("Please enter a valid URL with http:// or https://");
                 return;
             }
 
@@ -139,18 +136,15 @@
                     stopAutoClick();
                     return;
                 }
+                
+                window.open(url, "_blank");
+                clickCounter++;
+                document.getElementById("count").innerText = clickCounter;
 
-                fetch(url)
-                    .then(() => {
-                        clickCounter++;
-                        document.getElementById("count").innerText = clickCounter;
-
-                        let historyList = document.getElementById("historyList");
-                        let listItem = document.createElement("li");
-                        listItem.textContent = `Click ${clickCounter} - ${new Date().toLocaleTimeString()}`;
-                        historyList.appendChild(listItem);
-                    })
-                    .catch(error => console.error("Error clicking URL:", error));
+                let historyList = document.getElementById("historyList");
+                let listItem = document.createElement("li");
+                listItem.textContent = `Click ${clickCounter} - ${new Date().toLocaleTimeString()}`;
+                historyList.appendChild(listItem);
             }, delay);
         }
 
