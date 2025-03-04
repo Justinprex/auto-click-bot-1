@@ -16,6 +16,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 20px;
             max-width: 600px;
             margin: auto;
             background: white;
@@ -51,6 +52,7 @@
         }
         .button-group {
             display: flex;
+            justify-content: space-between;
             width: 100%;
             gap: 10px;
         }
@@ -138,17 +140,17 @@
                     return;
                 }
 
-                fetch(url) // Perform a fetch request instead of opening a new tab
-                    .then(response => console.log(`Clicked ${clickCounter + 1}: ${response.status}`))
-                    .catch(error => console.error('Error:', error));
+                fetch(url)
+                    .then(() => {
+                        clickCounter++;
+                        document.getElementById("count").innerText = clickCounter;
 
-                clickCounter++;
-                document.getElementById("count").innerText = clickCounter;
-
-                let historyList = document.getElementById("historyList");
-                let listItem = document.createElement("li");
-                listItem.textContent = `Click ${clickCounter} - ${new Date().toLocaleTimeString()}`;
-                historyList.appendChild(listItem);
+                        let historyList = document.getElementById("historyList");
+                        let listItem = document.createElement("li");
+                        listItem.textContent = `Click ${clickCounter} - ${new Date().toLocaleTimeString()}`;
+                        historyList.appendChild(listItem);
+                    })
+                    .catch(error => console.error("Error clicking URL:", error));
             }, delay);
         }
 
@@ -161,5 +163,6 @@
             button.classList.remove("stop");
         }
     </script>
+
 </body>
 </html>
