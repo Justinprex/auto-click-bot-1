@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Link Auto-Click Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, color 0.3s;
+            border: 1px solid #ddd;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button.stop {
+            background-color: #dc3545;
+        }
+        .button-group {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+        .history {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            margin-top: 10px;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .processing {
+            display: none;
+            font-size: 16px;
+            color: #007bff;
+            margin-top: 10px;
+            animation: fade 1s infinite alternate;
+        }
+        @keyframes fade {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Web Link Auto-Click Bot</h2>
+
+    <div class="container">
+        <div class="input-group">
+            <label>Enter Website URL:</label>
+            <input type="text" id="url" placeholder="https://example.com">
+        </div>
+
+        <div class="input-group">
+            <label>Number of Clicks:</label>
+            <input type="number" id="clickCount" value="5" min="1">
+        </div>
+
+        <div class="input-group">
+            <label>Click Interval (seconds):</label>
+            <input type="number" id="clickInterval" value="2" min="1">
+        </div>
+
+        <div class="button-group">
+            <button id="toggleButton" onclick="toggleAutoClick()">Start Auto-Click</button>
+        </div>
+
+        <h3>Click Count: <span id="count">0</span></h3>
+
+        <div class="processing" id="processingText">Processing...</div>
+
+        <div class="history">
+            <h3>Click History</h3>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let clickCounter = 0;
+        let maxClicks = 0;
+        let interval;
+        let running = false;
+
+        function toggleAutoClick() {
+            if (running) {
+                stopAutoClick();
+            } else {
+                startAutoClick();
+            }
+        }
+
+        function startAutoClick() {
+            toggleShade(true);
+            let url = document.getElementById("url").value;
+            maxClicks = parseInt(document.getElementById("clickCount").value);
+            let delay = parseInt(document.getElementById("clickInterval").value) * 1000;
+
+            if (!url) {
+                alert("Please enter a valid URL!");
+                return;
+            }
+
+            running = true;
+            clickCounter = 0;
+            document.getElementById("count").innerText = clickCounter;
+            document.getElementById("historyList").innerHTML = "";
+            document.getElementById("processingText").style.display = "block";
+
+            let button = document.getElementById("toggleButton");
+            button.innerText = "Stop Auto-Click";
+            button.classList.add("stop");
+
+            let win = window.open('', '_blank');
+            if (win) win.blur();  // Prevent focus switching
+
+            interval = setInterval(() => {
+                if (clickCounter >= maxClicks) {
+                    stopAutoClick();
+                    return;
+                }
+
+                win.location.href = url;
+
+                clickCounter++;
+                document.getElementById("count").innerText = clickCounter;
+
+                let historyList = document.getElementById("historyList");
+                let listItem = document.createElement("li");
+                listItem.textContent = `Click ${clickCounter} - ${new Date().toLocaleTimeString()}`;
+                historyList.appendChild(listItem);
+            }, delay);
+        }
+
+        function stopAutoClick() {
+            clearInterval(interval);
+            running = false;
+            document.getElementById("processingText").style.display = "none";
+            toggleShade(false);
+
+            let button = document.getElementById("toggleButton");
+            button.innerText = "Start Auto-Click";
+            button.classList.remove("stop");
+        }
+
+        function toggleShade(show) {
+            document.getElementById("shade").style.display = show ? "flex" : "none";
+        }
+    </script>
+
+</body>
+</html>
+<style>
+    .shade {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: none;
+    }
+</style>
+
+<div class="shade" id="shade">
+    <div class="container">
+        <h2>Processing...</h2>
+    </div>
+</div>
+
+<script>
+    function toggleShade(show) {
+        document.getElementById("shade").style.display = show ? "flex" : "none";
+    }
+
+    function startAutoClick() {
+        toggleShade(true);
+        // existing code...
+    }
+
+    function stopAutoClick() {
+        toggleShade(false);
+        // existing code...
+    }
+</script>
