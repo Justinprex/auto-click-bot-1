@@ -132,16 +132,15 @@
             button.innerText = "Stop Auto-Click";
             button.classList.add("stop");
 
-            let win = window.open('', '_blank');
-            if (win) win.blur();  // Prevent focus switching
-
             interval = setInterval(() => {
                 if (clickCounter >= maxClicks) {
                     stopAutoClick();
                     return;
                 }
 
-                win.location.href = url;
+                fetch(url) // Perform a fetch request instead of opening a new tab
+                    .then(response => console.log(`Clicked ${clickCounter + 1}: ${response.status}`))
+                    .catch(error => console.error('Error:', error));
 
                 clickCounter++;
                 document.getElementById("count").innerText = clickCounter;
@@ -162,6 +161,5 @@
             button.classList.remove("stop");
         }
     </script>
-
 </body>
 </html>
